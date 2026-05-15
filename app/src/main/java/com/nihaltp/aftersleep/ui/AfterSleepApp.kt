@@ -1,8 +1,7 @@
 package com.nihaltp.aftersleep.ui
 
 import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -51,11 +50,6 @@ fun AfterSleepApp(app: AfterSleepApplication) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     var route by rememberSaveable { mutableStateOf(ScreenRoute.Sleep) }
-
-    val notificationPermissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-        ) { mainViewModel.refreshPermissions() }
 
     LaunchedEffect(Unit) {
         mainViewModel.refreshPermissions()
@@ -113,7 +107,6 @@ fun AfterSleepApp(app: AfterSleepApplication) {
                                     )
                                 },
                                 onRequestPermissionsRefreshed = { mainViewModel.refreshPermissions() },
-                                onSettingsRequested = { route = ScreenRoute.Settings },
                                 modifier = Modifier.fillMaxSize().padding(paddingValues),
                             )
                         ScreenRoute.Settings ->

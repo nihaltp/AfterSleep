@@ -22,19 +22,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -81,12 +78,9 @@ fun HomeScreen(
     onOpenNotificationListenerSettings: () -> Unit,
     onOpenBatteryOptimizationSettings: () -> Unit,
     onRequestPermissionsRefreshed: () -> Unit,
-    onSettingsRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    val snackbarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
     var selectedDelayMillis by rememberSaveable {
         mutableStateOf(
@@ -144,9 +138,10 @@ fun HomeScreen(
             }
         }
 
-        val hasAllPermissions = state.permissions.notificationPermissionGranted &&
-            state.permissions.listenerAccessGranted &&
-            state.permissions.batteryOptimizationIgnored
+        val hasAllPermissions =
+            state.permissions.notificationPermissionGranted &&
+                state.permissions.listenerAccessGranted &&
+                state.permissions.batteryOptimizationIgnored
 
         if (!hasAllPermissions) {
             PermissionsBlock(
@@ -297,7 +292,9 @@ fun HomeScreen(
             onValueChange = { customDelayMinutes = it.filter { char -> char.isDigit() } },
             onDismiss = { customDelayDialogOpen = false },
             onConfirm = {
-                selectedDelayMillis = customDelayMinutes.toLongOrNull()?.coerceAtLeast(1)?.times(60_000L) ?: selectedDelayMillis
+                selectedDelayMillis =
+                    customDelayMinutes.toLongOrNull()?.coerceAtLeast(1)?.times(60_000L)
+                        ?: selectedDelayMillis
                 customDelayDialogOpen = false
             },
         )
@@ -335,21 +332,23 @@ private fun PermissionsBlock(
             PermissionRow(
                 title = "Notifications",
                 description = "Required for the foreground service and quiet playback controls.",
-                granted = state.permissions.notificationPermissionGranted,
                 actionLabel = if (state.permissions.notificationPermissionGranted) "Manage" else "Grant",
-                onAction = if (state.permissions.notificationPermissionGranted) onOpenNotificationSettings else onRequestNotificationPermission,
+                onAction =
+                    if (state.permissions.notificationPermissionGranted) {
+                        onOpenNotificationSettings
+                    } else {
+                        onRequestNotificationPermission
+                    },
             )
             PermissionRow(
                 title = "Media session access",
                 description = "Lets AfterSleep detect the active playback app through Android media controls.",
-                granted = state.permissions.listenerAccessGranted,
                 actionLabel = if (state.permissions.listenerAccessGranted) "Open" else "Enable",
                 onAction = onOpenNotificationListenerSettings,
             )
             PermissionRow(
                 title = "Battery optimization",
                 description = "Optional, but disabling it helps the background timer stay dependable overnight.",
-                granted = state.permissions.batteryOptimizationIgnored,
                 actionLabel = if (state.permissions.batteryOptimizationIgnored) "Done" else "Guide me",
                 onAction = onOpenBatteryOptimizationSettings,
             )
@@ -361,7 +360,6 @@ private fun PermissionsBlock(
 private fun PermissionRow(
     title: String,
     description: String,
-    granted: Boolean,
     actionLabel: String,
     onAction: () -> Unit,
 ) {
@@ -440,8 +438,10 @@ private fun TimerStateCard(state: MainUiState) {
     val timerState = state.timerState
     val remaining =
         when {
-            timerState.stage == PlaybackStage.WaitingToStart -> timerState.delayEndsAtElapsedRealtime - state.nowElapsedRealtime
-            timerState.stage == PlaybackStage.WaitingToStop -> (timerState.stopEndsAtElapsedRealtime ?: 0L) - state.nowElapsedRealtime
+            timerState.stage == PlaybackStage.WaitingToStart ->
+                timerState.delayEndsAtElapsedRealtime - state.nowElapsedRealtime
+            timerState.stage == PlaybackStage.WaitingToStop ->
+                (timerState.stopEndsAtElapsedRealtime ?: 0L) - state.nowElapsedRealtime
             else -> 0L
         }.coerceAtLeast(0L)
     val stageLabel =
@@ -453,14 +453,11 @@ private fun TimerStateCard(state: MainUiState) {
             PlaybackStage.Error -> "Failed to resume"
             else -> "Idle"
         }
+    val appName = timerState.sessionAppLabel ?: "Selected app"
     val stageDescription =
         when (timerState.stage) {
-            PlaybackStage.WaitingToStart -> "${timerState.sessionAppLabel ?: "Selected app"} resumes in ${formatDuration(
-                remaining,
-            )}"
-            PlaybackStage.WaitingToStop -> "${timerState.sessionAppLabel ?: "Selected app"} stops in ${formatDuration(
-                remaining,
-            )}"
+            PlaybackStage.WaitingToStart -> "$appName resumes in ${formatDuration(remaining)}"
+            PlaybackStage.WaitingToStop -> "$appName stops in ${formatDuration(remaining)}"
             PlaybackStage.Playing -> "Playback resumed and the stop timer is now counting down."
             PlaybackStage.Completed -> timerState.lastMessage ?: "Timer finished."
             PlaybackStage.Error -> timerState.lastMessage ?: "Resume failed."
@@ -477,7 +474,7 @@ private fun TimerStateCard(state: MainUiState) {
             )
             Text(text = stageDescription, color = MaterialTheme.colorScheme.onSurfaceVariant)
             androidx.compose.material3.LinearProgressIndicator(
-                progress =
+                progress = {
                     when (timerState.stage) {
                         PlaybackStage.WaitingToStart ->
                             (1f - remaining.toFloat() / timerState.delayMillis.coerceAtLeast(1L).toFloat()).coerceIn(
@@ -492,7 +489,8 @@ private fun TimerStateCard(state: MainUiState) {
                             )
                         }
                         else -> 0f
-                    },
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().height(6.dp),
             )
             if (timerState.sessionAppLabel != null) {
