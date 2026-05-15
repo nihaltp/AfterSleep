@@ -4,6 +4,7 @@ build/
 **/build/
 
 # Local configuration
+key.properties
 local.properties
 *.keystore
 *.jks
