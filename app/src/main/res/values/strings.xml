@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AfterSleep</string>
+    <string name="notification_channel_name">AfterSleep playback timer</string>
+    <string name="notification_channel_description">Keeps delayed playback controls running in the background.</string>
+    <string name="playback_failure_channel_name">Playback failures</string>
+    <string name="playback_failure_channel_description">Alerts you when a media app refuses to resume playback.</string>
+    <string name="permission_notifications_title">Notification permission</string>
+    <string name="permission_notifications_body">AfterSleep uses notifications for the foreground service and media controls.</string>
+    <string name="permission_listener_title">Media session access</string>
+    <string name="permission_listener_body">AfterSleep needs notification listener access to detect active media sessions on your device.</string>
+    <string name="permission_battery_title">Battery optimization</string>
+    <string name="permission_battery_body">Disabling battery optimization helps the timer stay reliable while you sleep.</string>
+</resources>
