@@ -1,0 +1,5 @@
+# Version 2
+
+Release notes for the current AfterSleep update:
+
+* Add a splash screen

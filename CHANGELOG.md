@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.0 - 2026-05-16
+
+- Add splash screen
+
 ## v1.0.0 - 2026-05-15
 
 - Add MIT License to the project (5967b6e)

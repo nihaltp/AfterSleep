@@ -1,0 +1,11 @@
+# Version 1
+
+Initial release of YT Playback Timer.
+
+Features:
+
+* Set a playback timer for YouTube videos
+* Automatically pauses playback when the timer ends
+* Clean dark-themed interface
+* Simple and lightweight design
+* Works locally without unnecessary permissions
