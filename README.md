@@ -1,5 +1,7 @@
 # AfterSleep
 
+<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="100" height="100" align="right" alt="AfterSleep Icon">
+
 AfterSleep is a Kotlin + Jetpack Compose Android app for delayed media playback control.
 
 ## Highlights
@@ -23,3 +25,13 @@ AfterSleep is a Kotlin + Jetpack Compose Android app for delayed media playback 
 
 - Grant notification access and notification permission for the best experience.
 - Battery optimization can interfere with overnight timers, so the app includes a shortcut to the relevant Android settings screen.
+
+## Screenshots
+
+Below are phone screenshots included in the `fastlane` metadata folder.
+
+<p align="center">
+	<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.jpg" width="240" />
+	<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.jpg" width="240" />
+	<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.jpg" width="240" />
+</p>
