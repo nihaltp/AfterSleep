@@ -144,15 +144,21 @@ fun HomeScreen(
             }
         }
 
-        PermissionsBlock(
-            state = state,
-            onRequestNotificationPermission = {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            },
-            onOpenNotificationSettings = onOpenNotificationSettings,
-            onOpenNotificationListenerSettings = onOpenNotificationListenerSettings,
-            onOpenBatteryOptimizationSettings = onOpenBatteryOptimizationSettings,
-        )
+        val hasAllPermissions = state.permissions.notificationPermissionGranted &&
+            state.permissions.listenerAccessGranted &&
+            state.permissions.batteryOptimizationIgnored
+
+        if (!hasAllPermissions) {
+            PermissionsBlock(
+                state = state,
+                onRequestNotificationPermission = {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                },
+                onOpenNotificationSettings = onOpenNotificationSettings,
+                onOpenNotificationListenerSettings = onOpenNotificationListenerSettings,
+                onOpenBatteryOptimizationSettings = onOpenBatteryOptimizationSettings,
+            )
+        }
 
         ActiveSessionCard(state = state)
 
