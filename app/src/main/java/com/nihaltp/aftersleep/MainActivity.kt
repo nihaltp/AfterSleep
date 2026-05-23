@@ -27,7 +27,12 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(settings.keepScreenDimEnabled) {
                 window.attributes =
                     window.attributes.apply {
-                        screenBrightness = if (settings.keepScreenDimEnabled) 0.08f else android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+                        screenBrightness =
+                            if (settings.keepScreenDimEnabled) {
+                                0f
+                            } else {
+                                android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+                            }
                     }
             }
 
