@@ -186,6 +186,11 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
+                    TimerChip(
+                        label = "Off",
+                        selected = selectedDelayMillis <= 0L,
+                        onClick = { selectedDelayMillis = 0L },
+                    )
                     delayPresets.forEach { preset ->
                         TimerChip(
                             label = preset.label,
@@ -195,12 +200,12 @@ fun HomeScreen(
                     }
                     TimerChip(
                         label = "Custom",
-                        selected = !delayPresets.any { it.millis == selectedDelayMillis },
+                        selected = selectedDelayMillis > 0L && !delayPresets.any { it.millis == selectedDelayMillis },
                         onClick = { customDelayDialogOpen = true },
                     )
                 }
                 Text(
-                    text = "Selected delay: ${formatMinutesLabel(selectedDelayMillis)}",
+                    text = "Selected delay: ${formatMinutesLabel(selectedDelayMillis.takeIf { it > 0L })}",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
