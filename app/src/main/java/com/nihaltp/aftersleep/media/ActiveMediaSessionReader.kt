@@ -63,7 +63,10 @@ class ActiveMediaSessionReader(private val context: Context) {
             title = title,
             artist = artist,
             playbackState = state,
-            isActive = state == PlaybackState.STATE_PLAYING || state == PlaybackState.STATE_BUFFERING || state == PlaybackState.STATE_PAUSED,
+            isActive =
+                state == PlaybackState.STATE_PLAYING ||
+                    state == PlaybackState.STATE_BUFFERING ||
+                    state == PlaybackState.STATE_PAUSED,
             lastUpdatedElapsedRealtime = SystemClock.elapsedRealtime(),
         )
     }

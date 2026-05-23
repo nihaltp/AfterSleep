@@ -4,7 +4,7 @@ val keystorePropertiesFile = file("key.properties")
 val keystoreProperties = Properties()
 
 if (keystorePropertiesFile.exists()) {
-keystoreProperties.load(keystorePropertiesFile.inputStream())
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
 }
 
 plugins {

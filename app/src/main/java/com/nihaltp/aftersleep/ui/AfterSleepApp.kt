@@ -1,7 +1,6 @@
 package com.nihaltp.aftersleep.ui
 
 import android.provider.Settings
-
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
