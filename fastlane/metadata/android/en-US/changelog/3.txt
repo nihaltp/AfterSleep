@@ -1,0 +1,5 @@
+Bump version to 1.0.2 and release configuration updates
+
+- Add `TimerChip` "Off" option and refine selected delay display logic (a43b124)
+- Refactor screen brightness logic for better readability (414966d)
+- Refactor code for improved readability and formatting (0354e1e)

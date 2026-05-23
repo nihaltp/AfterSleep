@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.0.0 - 2026-05-16
+## v1.0.2 - 2026-05-23
+
+- Add `TimerChip` "Off" option and refine selected delay display logic (a43b124)
+- Refactor screen brightness logic for better readability (414966d)
+- Refactor code for improved readability and formatting (0354e1e)
+
+## v1.0.1 - 2026-05-16
 
 - Add splash screen
 
