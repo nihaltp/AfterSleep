@@ -2,7 +2,8 @@ AfterSleep is a Kotlin + Jetpack Compose Android app for delayed media playback 
 
 Set a timer to automatically pause or resume media playback while you sleep. The app runs a foreground service for reliable timers and uses Notification listener support for active session detection.
 
-**Highlights**
+Highlights:
+
 * Dark-only Material 3 UI
 * MediaSessionManager and MediaController based playback control
 * Foreground service for reliable timers
