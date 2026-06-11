@@ -29,3 +29,6 @@ captures/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Fastlane
+fastlane/report.xml
