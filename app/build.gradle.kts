@@ -23,6 +23,7 @@ android {
         targetSdk = 35
         versionCode = 3
         versionName = "1.0.2"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -113,6 +114,14 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("io.mockk:mockk:1.13.11")
+
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("tools.fastlane:screengrab:2.1.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
 // https://stackoverflow.com/questions/70917287/how-to-assign-different-versioncode-for-multiple-architecture-apks-built-with-fl/70942242#70942242

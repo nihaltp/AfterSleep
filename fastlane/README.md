@@ -87,6 +87,30 @@ Build the debug APK
 
 Build the release APK
 
+### android github_release
+
+```sh
+[bundle exec] fastlane android github_release
+```
+
+Build release artifacts and create a GitHub Release
+
+### android test
+
+```sh
+[bundle exec] fastlane android test
+```
+
+Run tests
+
+### android screenshots
+
+```sh
+[bundle exec] fastlane android screenshots
+```
+
+Capture screenshots of the application using Screengrab
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
