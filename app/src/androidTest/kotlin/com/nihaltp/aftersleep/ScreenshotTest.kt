@@ -65,38 +65,51 @@ class ScreenshotTest {
             val window = activity.window
             val controller = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
             controller.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior = androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior =
+                androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
             // Pre-populate mock active session with YouTube
             val app = activity.applicationContext as AfterSleepApplication
             val repository = app.container.activeSessionRepository
-            val mockSession = MediaSessionSnapshot(
-                packageName = "com.google.android.youtube",
-                appLabel = "YouTube",
-                title = "Calming Sleep Music 24/7",
-                artist = "YouTube Music",
-                playbackState = android.media.session.PlaybackState.STATE_PLAYING,
-                isActive = true,
-                lastUpdatedElapsedRealtime = android.os.SystemClock.elapsedRealtime()
-            )
+            val mockSession =
+                MediaSessionSnapshot(
+                    packageName = "com.google.android.youtube",
+                    appLabel = "YouTube",
+                    title = "Calming Sleep Music 24/7",
+                    artist = "YouTube Music",
+                    playbackState = android.media.session.PlaybackState.STATE_PLAYING,
+                    isActive = true,
+                    lastUpdatedElapsedRealtime = android.os.SystemClock.elapsedRealtime(),
+                )
             repository.update(listOf(mockSession))
         }
 
         // Grant listener permission programmatically via shell if not already granted
-        val isGranted = context.packageName in androidx.core.app.NotificationManagerCompat.getEnabledListenerPackages(context)
+        val isGranted =
+            context.packageName in
+                androidx.core.app.NotificationManagerCompat.getEnabledListenerPackages(context)
         if (!isGranted) {
-            val serviceName = "${context.packageName}/com.nihaltp.aftersleep.service.ActiveMediaNotificationListenerService"
+            val serviceName =
+                "${context.packageName}/com.nihaltp.aftersleep.service.ActiveMediaNotificationListenerService"
             try {
                 // Get current listeners
-                val pfd = instrumentation.uiAutomation.executeShellCommand("settings get secure enabled_notification_listeners")
-                val reader = java.io.BufferedReader(java.io.InputStreamReader(android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd)))
+                val pfd =
+                    instrumentation.uiAutomation.executeShellCommand(
+                        "settings get secure enabled_notification_listeners",
+                    )
+                val reader =
+                    java.io.BufferedReader(
+                        java.io.InputStreamReader(android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd)),
+                    )
                 val current = reader.readLine()?.trim() ?: ""
                 reader.close()
-                
+
                 val currentList = if (current == "null" || current.isEmpty()) emptyList() else current.split(":")
                 if (serviceName !in currentList) {
                     val newList = if (currentList.isEmpty()) serviceName else "$current:$serviceName"
-                    instrumentation.uiAutomation.executeShellCommand("settings put secure enabled_notification_listeners $newList")
+                    instrumentation.uiAutomation.executeShellCommand(
+                        "settings put secure enabled_notification_listeners $newList",
+                    )
                     // Wait a moment for system to sync and view model ticker to refresh
                     Thread.sleep(2000)
                 }

@@ -126,12 +126,13 @@ dependencies {
 
 // https://stackoverflow.com/questions/70917287/how-to-assign-different-versioncode-for-multiple-architecture-apks-built-with-fl/70942242#70942242
 // Map each ABI to a unique integer suffix
-val abiCodes = mapOf(
-    "armeabi-v7a" to 1,
-    "arm64-v8a" to 2,
-    "x86" to 3,
-    "x86_64" to 4
-)
+val abiCodes =
+    mapOf(
+        "armeabi-v7a" to 1,
+        "arm64-v8a" to 2,
+        "x86" to 3,
+        "x86_64" to 4,
+    )
 
 android.applicationVariants.all {
     val variant = this
