@@ -11,4 +11,12 @@
     <string name="permission_listener_body">AfterSleep needs notification listener access to detect active media sessions on your device.</string>
     <string name="permission_battery_title">Battery optimization</string>
     <string name="permission_battery_body">Disabling battery optimization helps the timer stay reliable while you sleep.</string>
+
+    <!-- Settings Tab Strings -->
+    <string name="settings_links">GitHub</string>
+    <string name="github_repo_title">GitHub Repository</string>
+    <string name="github_issues_title">Report an Issue</string>
+    <string name="github_issues_desc">Submit bugs or suggestions to our tracker</string>
+    <string name="settings_links_subtitle">Source code, issues, and contributions.</string>
+    <string name="github_repo_desc">View the source code on GitHub.</string>
 </resources>

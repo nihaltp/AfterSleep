@@ -1,5 +1,7 @@
 package com.nihaltp.aftersleep.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +16,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.nihaltp.aftersleep.R
 import com.nihaltp.aftersleep.data.model.UserSettings
 import com.nihaltp.aftersleep.ui.components.SectionHeader
 import com.nihaltp.aftersleep.ui.components.SettingActionRow
@@ -36,6 +41,7 @@ fun SettingsScreen(
     var defaultStopDialog by rememberSaveable { mutableStateOf(false) }
     var defaultDelayMinutes by rememberSaveable { mutableStateOf("10") }
     var defaultStopMinutes by rememberSaveable { mutableStateOf("20") }
+    val context = LocalContext.current
 
     Column(
         modifier =
@@ -133,6 +139,34 @@ fun SettingsScreen(
                 )
             }
         }
+
+        SleepCard {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                SectionHeader(
+                    title = stringResource(R.string.settings_links),
+                    subtitle = stringResource(R.string.settings_links_subtitle),
+                )
+                SettingActionRow(
+                    title = stringResource(R.string.github_repo_title),
+                    description = stringResource(R.string.github_repo_desc),
+                    actionLabel = "Open",
+                    onAction = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/nihaltp/AfterSleep"))
+                        context.startActivity(intent)
+                    },
+                )
+                SettingActionRow(
+                    title = stringResource(R.string.github_issues_title),
+                    description = stringResource(R.string.github_issues_desc),
+                    actionLabel = "Open",
+                    onAction = {
+                        val intent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/nihaltp/AfterSleep/issues"))
+                        context.startActivity(intent)
+                    },
+                )
+            }
+        }
     }
 
     if (defaultDelayDialog) {
@@ -167,3 +201,4 @@ fun SettingsScreen(
         )
     }
 }
+
