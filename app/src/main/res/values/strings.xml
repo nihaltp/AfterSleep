@@ -19,4 +19,9 @@
     <string name="github_issues_desc">Submit bugs or suggestions to our tracker</string>
     <string name="settings_links_subtitle">Source code, issues, and contributions.</string>
     <string name="github_repo_desc">View the source code on GitHub.</string>
+    <string name="settings_app_info">App Info</string>
+    <string name="settings_app_info_subtitle">Version details and install information.</string>
+    <string name="version_title">Version</string>
+    <string name="version_code">Version Code</string>
+    <string name="installer">Installer</string>
 </resources>
