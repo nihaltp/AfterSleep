@@ -1,5 +1,7 @@
 # Version 2
 
-Release notes for the current AfterSleep update:
+<h3>Release notes for the current AfterSleep update</h3>
 
-* Add a splash screen
+<ul>
+  <li>Add a splash screen</li>
+</ul>
