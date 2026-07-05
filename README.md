@@ -4,6 +4,20 @@
 
 AfterSleep is a Kotlin + Jetpack Compose Android app for delayed media playback control.
 
+## Download
+
+Available on my F-Droid repository:
+
+<img src="https://raw.githubusercontent.com/nihaltp/fdroid/main/repo/index.png" width="100" height="100" align="right" alt="F-Droid QR Code">
+
+**Repository URL:**
+
+```text
+https://nihaltp.github.io/fdroid/repo/
+```
+
+[Open Repo Page](https://nihaltp.github.io/fdroid/repo/) to scan the QR code.
+
 ## Highlights
 
 - Dark-only Material 3 UI
@@ -31,7 +45,8 @@ AfterSleep is a Kotlin + Jetpack Compose Android app for delayed media playback 
 Below are phone screenshots included in the `fastlane` metadata folder.
 
 <p align="center">
-	<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_1.jpg" width="240" />
-	<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_2.jpg" width="240" />
-	<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot_3.jpg" width="240" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="240" alt="Screenshot 1" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="240" alt="Screenshot 2"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="240" alt="Screenshot 3"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="240" alt="Screenshot 4"/>
 </p>
