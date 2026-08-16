@@ -1,5 +1,7 @@
 # AfterSleep
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE) [![Platform: Android](https://img.shields.io/badge/Platform-Android-green.svg?style=for-the-badge)](#) [![Total Github Downloads (All Assets)](https://img.shields.io/github/downloads/nihaltp/AfterSleep/total?style=for-the-badge&logo=github)](https://github.com/nihaltp/AfterSleep/releases/latest)
+
 <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="100" height="100" align="right" alt="AfterSleep Icon">
 
 AfterSleep is a Kotlin + Jetpack Compose Android app for delayed media playback control.
