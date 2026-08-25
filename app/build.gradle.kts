@@ -31,15 +31,6 @@ android {
         }
     }
 
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
-        }
-    }
-
     signingConfigs {
         create("release") {
             storeFile = file(keystoreProperties["storeFile"] as String)
@@ -122,26 +113,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
-// https://stackoverflow.com/questions/70917287/how-to-assign-different-versioncode-for-multiple-architecture-apks-built-with-fl/70942242#70942242
-// Map each ABI to a unique integer suffix
-val abiCodes =
-    mapOf(
-        "armeabi-v7a" to 1,
-        "arm64-v8a" to 2,
-        "x86" to 3,
-        "x86_64" to 4,
-    )
-
 android.applicationVariants.all {
     val variant = this
     variant.outputs.all {
         val output = this as? com.android.build.gradle.api.ApkVariantOutput
-        val abi = output?.getFilter(com.android.build.VariantOutput.FilterType.ABI)
-        if (abi != null) {
-            val baseAbiVersionCode = abiCodes[abi] ?: 0
-            output.versionCodeOverride = variant.versionCode * 1000 + baseAbiVersionCode
-        } else {
-            output?.versionCodeOverride = variant.versionCode * 1000
-        }
+        output?.versionCodeOverride = variant.versionCode * 1000
     }
 }
