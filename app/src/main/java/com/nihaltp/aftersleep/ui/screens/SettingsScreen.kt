@@ -45,6 +45,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     settings: UserSettings,
     onOpenBatteryOptimizationSettings: () -> Unit,
+    onNavigateToLicenses: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -141,7 +142,7 @@ fun SettingsScreen(
                 SettingActionRow(
                     title = "Battery optimization",
                     description = "Guide Android to keep the service alive overnight.",
-                    actionLabel = "Open",
+                    actionLabel = stringResource(R.string.action_open),
                     onAction = onOpenBatteryOptimizationSettings,
                 )
                 Text(
@@ -160,7 +161,7 @@ fun SettingsScreen(
                 SettingActionRow(
                     title = stringResource(R.string.github_repo_title),
                     description = stringResource(R.string.github_repo_desc),
-                    actionLabel = "Open",
+                    actionLabel = stringResource(R.string.action_open),
                     onAction = {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/nihaltp/AfterSleep"))
                         context.startActivity(intent)
@@ -169,7 +170,7 @@ fun SettingsScreen(
                 SettingActionRow(
                     title = stringResource(R.string.github_issues_title),
                     description = stringResource(R.string.github_issues_desc),
-                    actionLabel = "Open",
+                    actionLabel = stringResource(R.string.action_open),
                     onAction = {
                         val intent =
                             Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/nihaltp/AfterSleep/issues"))
@@ -227,6 +228,13 @@ fun SettingsScreen(
                         modifier = Modifier.weight(1f),
                     )
                 }
+
+                SettingActionRow(
+                    title = stringResource(R.string.licenses_title),
+                    description = stringResource(R.string.licenses_desc),
+                    actionLabel = stringResource(R.string.action_open),
+                    onAction = onNavigateToLicenses,
+                )
             }
         }
     }

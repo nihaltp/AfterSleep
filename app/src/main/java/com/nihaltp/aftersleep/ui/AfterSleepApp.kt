@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
@@ -27,10 +29,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nihaltp.aftersleep.AfterSleepApplication
+import com.nihaltp.aftersleep.R
 import com.nihaltp.aftersleep.ui.model.ScreenRoute
 import com.nihaltp.aftersleep.ui.screens.HomeScreen
 import com.nihaltp.aftersleep.ui.screens.SettingsScreen
@@ -61,6 +65,16 @@ fun AfterSleepApp(app: AfterSleepApplication) {
             topBar = {
                 TopAppBar(
                     title = { Text("AfterSleep") },
+                    navigationIcon = {
+                        if (route == ScreenRoute.Licenses) {
+                            androidx.compose.material3.IconButton(onClick = { route = ScreenRoute.Settings }) {
+                                androidx.compose.material3.Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(R.string.back),
+                                )
+                            }
+                        }
+                    },
                     actions = {
                         Row {
                             FilterChip(
@@ -117,6 +131,11 @@ fun AfterSleepApp(app: AfterSleepApplication) {
                                         mainViewModel.requestBatteryOptimizationIntent(),
                                     )
                                 },
+                                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                                onNavigateToLicenses = { route = ScreenRoute.Licenses },
+                            )
+                        ScreenRoute.Licenses ->
+                            com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer(
                                 modifier = Modifier.fillMaxSize().padding(paddingValues),
                             )
                     }
