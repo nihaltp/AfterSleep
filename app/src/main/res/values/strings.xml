@@ -24,4 +24,8 @@
     <string name="version_title">Version</string>
     <string name="version_code">Version Code</string>
     <string name="installer">Installer</string>
+    <string name="licenses_title">Open Source Licenses</string>
+    <string name="licenses_desc">Libraries and components used by this app</string>
+    <string name="action_open">Open</string>
+    <string name="back">Back</string>
 </resources>
