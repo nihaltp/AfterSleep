@@ -12,7 +12,7 @@ class AppContainer(context: Context) {
     val settingsRepository = SettingsRepository(appContext)
     val timerStateRepository = TimerStateRepository(appContext)
     val reliabilityRepository = ReliabilityRepository(appContext)
-    val activeSessionRepository = ActiveSessionRepository(appContext)
+    val activeSessionRepository = ActiveSessionRepository()
     val activeSessionReader = ActiveMediaSessionReader(appContext)
     val wakeLockHelper = WakeLockHelper(appContext)
     val mediaPlaybackOrchestrator =
