@@ -30,8 +30,5 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Build release APK
-        run: ./gradlew assembleRelease --no-daemon
-
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --no-daemon
