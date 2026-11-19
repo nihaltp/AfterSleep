@@ -27,6 +27,9 @@ jobs:
       - name: Run ktlint check
         run: ./gradlew :app:ktlintCheck --no-daemon
 
+      - name: Run detekt
+        run: ./gradlew :app:detekt --no-daemon
+
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
