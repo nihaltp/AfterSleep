@@ -1,12 +1,11 @@
 package com.nihaltp.aftersleep.data
 
-import android.content.Context
 import com.nihaltp.aftersleep.data.model.MediaSessionSnapshot
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class ActiveSessionRepository(private val context: Context) {
+class ActiveSessionRepository {
     private val _sessions = MutableStateFlow<List<MediaSessionSnapshot>>(emptyList())
     private val _activeSession = MutableStateFlow<MediaSessionSnapshot?>(null)
 

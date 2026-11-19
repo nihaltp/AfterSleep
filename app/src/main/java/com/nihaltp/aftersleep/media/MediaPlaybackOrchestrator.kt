@@ -7,14 +7,12 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.nihaltp.aftersleep.BuildConfig
 import com.nihaltp.aftersleep.data.ActiveSessionRepository
-import com.nihaltp.aftersleep.data.SettingsRepository
 import com.nihaltp.aftersleep.data.model.MediaSessionSnapshot
 
 class MediaPlaybackOrchestrator(
     private val context: Context,
     private val activeSessionRepository: ActiveSessionRepository,
     private val activeSessionReader: ActiveMediaSessionReader,
-    private val settingsRepository: SettingsRepository,
 ) {
     fun refreshActiveSessions(): List<MediaSessionSnapshot> {
         val snapshots = activeSessionReader.readActiveSessions()

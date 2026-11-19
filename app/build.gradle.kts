@@ -1,4 +1,6 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val keystorePropertiesFile = file("key.properties")
 val keystoreProperties = Properties()
@@ -12,6 +14,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jlleitschuh.gradle.ktlint")
+    id("io.gitlab.arturbosch.detekt")
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
@@ -120,5 +123,34 @@ android.applicationVariants.all {
     variant.outputs.all {
         val output = this as? com.android.build.gradle.api.ApkVariantOutput
         output?.versionCodeOverride = variant.versionCode * 1000
+    }
+}
+
+ktlint {
+    version.set("1.2.1")
+    android.set(true)
+    filter {
+        exclude("**/*.gradle.kts")
+        exclude("**/build/**")
+    }
+}
+
+tasks.withType<Detekt> {
+    jvmTarget = "17"
+    source = project.fileTree("${project.projectDir}/src/main") {
+        include("**/*.kt")
+    } + project.fileTree("${project.projectDir}/src/test") {
+        include("**/*.kt")
+    }
+    config = files(rootProject.file("detekt.yml"))
+    reports {
+        xml {
+            required.set(true)
+            outputLocation.set(file("build/reports/detekt/detekt.xml"))
+        }
+        html {
+            required.set(true)
+            outputLocation.set(file("build/reports/detekt/detekt.html"))
+        }
     }
 }

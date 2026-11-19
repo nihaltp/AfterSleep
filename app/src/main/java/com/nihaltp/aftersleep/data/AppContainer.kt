@@ -20,7 +20,6 @@ class AppContainer(context: Context) {
             context = appContext,
             activeSessionRepository = activeSessionRepository,
             activeSessionReader = activeSessionReader,
-            settingsRepository = settingsRepository,
         )
     val batteryOptimizationHelper = BatteryOptimizationHelper(appContext)
 }
