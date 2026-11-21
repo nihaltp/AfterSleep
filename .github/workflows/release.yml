@@ -99,7 +99,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: AfterSleep ${{ github.ref_name }}
           body: ${{ fromJson(steps.changelog.outputs.changelog) }}
-          files: ${{ steps.apks.outputs.apk* }}
+          files: app/build/outputs/apk/release/*.apk
           draft: false
           prerelease: false
           generate_release_notes: false
