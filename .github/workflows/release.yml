@@ -50,7 +50,7 @@ jobs:
         env:
           KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
         run: |
-          echo "$KEYSTORE_PROPERTIES" | base64 -d > keystore.properties
+          echo "$KEYSTORE_PROPERTIES" | base64 -d > app/key.properties
 
       - name: Build release APKs
         run: ./gradlew assembleRelease --no-daemon
