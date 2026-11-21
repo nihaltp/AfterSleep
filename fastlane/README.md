@@ -63,29 +63,13 @@ Increment version code
 
 Print the current version name and code
 
-### android clean
+### android prepare_release
 
 ```sh
-[bundle exec] fastlane android clean
+[bundle exec] fastlane android prepare_release
 ```
 
-Clean the project
-
-### android build_debug
-
-```sh
-[bundle exec] fastlane android build_debug
-```
-
-Build the debug APK
-
-### android build_release
-
-```sh
-[bundle exec] fastlane android build_release
-```
-
-Build the release APK
+Generate changelogs, commit version bump, and create a local git tag
 
 ### android github_release
 
@@ -93,15 +77,7 @@ Build the release APK
 [bundle exec] fastlane android github_release
 ```
 
-Build release artifacts and create a GitHub Release
-
-### android test
-
-```sh
-[bundle exec] fastlane android test
-```
-
-Run tests
+Generate changelog, add screenshots, build release APKs, and push branch + tag
 
 ### android screenshots
 
@@ -109,7 +85,7 @@ Run tests
 [bundle exec] fastlane android screenshots
 ```
 
-Capture screenshots of the application using Screengrab
+Capture screenshots of the application using Screengrab (uses releaseScreenshot variant)
 
 ----
 

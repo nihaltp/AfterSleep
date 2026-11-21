@@ -114,7 +114,7 @@ def prepare_release_commit(version_name:, version_code:)
     end
   end
 
-  types_order = ["fix", "feat", "style", "refactor", "docs", "perf", "test", "build", "ci", "chore", "revert"]
+  types_order = ["feat", "fix", "refactor", "style", "test", "docs", "perf", "build", "ci", "chore", "revert"]
 
   type_to_section = {
     "fix" => "### Fixed",
@@ -277,73 +277,63 @@ platform :android do
     puts "Current version: #{version_name} (code: #{version_code})"
   end
 
-  desc "Clean the project"
-  lane :clean do
-    gradle(task: "clean")
+  desc "Generate changelogs, commit version bump, and create a local git tag"
+  lane :prepare_release do
+    version_name = get_version_name_from_gradle
+    version_code = get_version_code_from_gradle
+    prepare_release_commit(
+      version_name: version_name,
+      version_code: version_code
+    )
   end
 
-  desc "Build the debug APK"
-  lane :build_debug do
-    gradle(task: "assembleDebug")
-  end
-
-  desc "Build the release APK"
-  lane :build_release do
-    gradle(task: "assembleRelease")
-  end
-
-  desc "Build release artifacts and create a GitHub Release"
+  desc "Generate changelog, add screenshots, build release APKs, and push branch + tag"
   lane :github_release do
     version_name = get_version_name_from_gradle
     version_code = get_version_code_from_gradle
 
+    project_root = File.expand_path("..", __dir__)
+
+    # 1. Generate changelog file, commit version bump + metadata (all locale screenshots
+    #    are included via the fastlane/metadata/android git add), and create local git tag
     tag_name, changelog_txt_path, project_root = prepare_release_commit(
       version_name: version_name,
       version_code: version_code
     )
 
-    puts "Building release APKs..."
-    build_release
-
-    current_branch = `git rev-parse --abbrev-ref HEAD`.strip
-    puts "Pushing branch #{current_branch} and tag #{tag_name} to origin..."
-    sh("git push origin #{current_branch}")
-    sh("git push origin #{tag_name} --force")
-
-    release_apk_dir = File.join(project_root, "app", "build", "outputs", "apk", "release")
-    apk_files = Dir.glob(File.join(release_apk_dir, "**", "*.apk"))
-    if apk_files.empty?
-      raise "No release APK files found to upload in #{release_apk_dir}!"
+    # 2. Explicitly stage screenshot files from every locale
+    metadata_dir = File.join(project_root, "fastlane", "metadata", "android")
+    Dir.glob(File.join(metadata_dir, "*", "images", "phoneScreenshots", "*.png")).each do |screenshot|
+      sh("git add #{screenshot}") rescue nil
     end
 
-    puts "Uploading the following APKs as assets:"
-    apk_files.each { |f| puts "- #{File.basename(f)}" }
+    # Commit any screenshots that weren't already included in the commit above
+    staged = `git diff --cached --name-only`.strip
+    unless staged.empty?
+      sh("git commit -m \"chore: add release screenshots\"")
+    end
 
-    apk_files_str = apk_files.map { |f| "\"#{f}\"" }.join(" ")
+    # 3. Push branch and tag to origin with retry logic
+    current_branch = `git rev-parse --abbrev-ref HEAD`.strip
+    puts "Pushing branch #{current_branch} and tag #{tag_name} to origin..."
 
-    max_retries = 3
-    attempt = 0
+    push_attempt = 0
     begin
-      attempt += 1
-      sh("gh release delete #{tag_name} --yes") rescue nil
-      puts "Creating GitHub Release #{tag_name} (Attempt #{attempt}/#{max_retries})..."
-      sh("gh release create #{tag_name} #{apk_files_str} --title \"#{tag_name}\" -F \"#{changelog_txt_path}\"")
-      puts "GitHub Release #{tag_name} successfully created!"
+      push_attempt += 1
+      sh("git push origin #{current_branch}")
+      sh("git push origin #{tag_name} --force")
     rescue => e
-      if attempt < max_retries
-        wait = attempt * 30
-        puts "GitHub release creation failed. Retrying in #{wait}s..."
+      if push_attempt < 3
+        wait = push_attempt * 10
+        puts "Git push failed. Retrying in #{wait}s (Attempt #{push_attempt + 1}/3)..."
         sleep(wait)
         retry
       else
         raise e
       end
     end
-  end
 
-  desc "Run tests"
-  lane :test do
-    gradle(task: "test")
+    puts "Release prep complete: tag #{tag_name} pushed. GitHub Actions creates the release and uploads APKs."
   end
 
   desc "Capture screenshots of the application using Screengrab (uses releaseScreenshot variant)"
