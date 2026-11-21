@@ -41,6 +41,7 @@ jobs:
           ndk-version: r27b
           build-tools-version: '35.0.0'
           cmdline-tools-version: 'latest'
+          packages: 'platforms;android-35 platform-tools build-tools;35.0.0'
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
