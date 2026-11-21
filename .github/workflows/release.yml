@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Validate (CI Checks)
+    uses: ./.github/workflows/android-ci.yml
+    permissions:
+      contents: read
+
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: validate
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27b
+          build-tools-version: '35.0.0'
+          cmdline-tools-version: 'latest'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Create keystore.properties
+        env:
+          KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
+        run: |
+          echo "$KEYSTORE_PROPERTIES" | base64 -d > keystore.properties
+
+      - name: Build release APKs
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Extract Fastlane changelog
+        id: changelog
+        run: |
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+          CHANGELOG_FILE="fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt"
+
+          if [[ -f "$CHANGELOG_FILE" ]]; then
+            CHANGELOG_CONTENT=$(cat "$CHANGELOG_FILE")
+          else
+            # Fallback: generate from git log since last tag
+            LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            if [[ -n "$LAST_TAG" ]]; then
+              CHANGELOG_CONTENT=$(git log "$LAST_TAG..HEAD" --pretty=format:"- %h  %s" --reverse)
+            else
+              CHANGELOG_CONTENT=$(git log --pretty=format:"- %h  %s" --reverse)
+            fi
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            CHANGELOG_CONTENT="## $TAG_NAME\n\n$CHANGELOG_CONTENT"
+          fi
+
+          # Escape for JSON output
+          CHANGELOG_ESCAPED=$(printf '%s' "$CHANGELOG_CONTENT" | jq -Rs .)
+          echo "changelog=$CHANGELOG_ESCAPED" >> $GITHUB_OUTPUT
+
+      - name: Find Release APKs
+        id: apks
+        run: |
+          APK_DIR=app/build/outputs/apk/release
+          mapfile -t APKS < <(ls "$APK_DIR"/*.apk 2>/dev/null)
+          if [ ${#APKS[@]} -eq 0 ]; then
+            echo "No release APKs found in $APK_DIR" >&2
+            exit 1
+          fi
+          echo "count=${#APKS[@]}" >> $GITHUB_OUTPUT
+          for i in "${!APKS[@]}"; do
+            echo "apk$i=${APKS[$i]}" >> $GITHUB_OUTPUT
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: AfterSleep ${{ github.ref_name }}
+          body: ${{ fromJson(steps.changelog.outputs.changelog) }}
+          files: ${{ steps.apks.outputs.apk* }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+
+      - name: Upload APKs as Artifact (backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: aftersleep-release-apks
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 90
