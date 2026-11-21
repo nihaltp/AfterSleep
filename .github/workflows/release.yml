@@ -52,6 +52,12 @@ jobs:
         run: |
           echo "$KEYSTORE_PROPERTIES" | base64 -d > app/key.properties
 
+      - name: Decode keystore
+        env:
+          KEYSTORE_JKS: ${{ secrets.KEYSTORE_JKS }}
+        run: |
+          echo "$KEYSTORE_JKS" | base64 -d > app/aftersleep-release-key.jks
+
       - name: Build release APKs
         run: ./gradlew assembleRelease --no-daemon
 
