@@ -37,6 +37,8 @@ android {
         }
     }
 
+    testBuildType = "releaseScreenshot"
+
     signingConfigs {
         if (hasValidKeystore) {
             create("release") {
@@ -64,6 +66,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        create("releaseScreenshot") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".screenshot"
+            versionNameSuffix = "-screenshot"
+            resValue("string", "app_name", "AfterSleep")
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 

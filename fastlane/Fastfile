@@ -69,6 +69,19 @@ def resolve_abi_apk(device_id)
   end
 end
 
+def resolve_release_screenshot_apk(device_id)
+  universal_apk = File.expand_path("../app/build/outputs/apk/releaseScreenshot/app-universal-releaseScreenshot.apk", __dir__)
+  legacy_universal_apk = File.expand_path("../app/build/outputs/apk/releaseScreenshot/app-releaseScreenshot.apk", __dir__)
+
+  if File.exist?(universal_apk)
+    universal_apk
+  elsif File.exist?(legacy_universal_apk)
+    legacy_universal_apk
+  else
+    raise "No releaseScreenshot APK found in app/build/outputs/apk/releaseScreenshot/"
+  end
+end
+
 def prepare_release_commit(version_name:, version_code:)
   tag_name = "v#{version_name}"
   project_root = File.expand_path("..", __dir__)
@@ -333,7 +346,7 @@ platform :android do
     gradle(task: "test")
   end
 
-  desc "Capture screenshots of the application using Screengrab"
+  desc "Capture screenshots of the application using Screengrab (uses releaseScreenshot variant)"
   lane :screenshots do
     # Resolve device ID first
     properties = {}
@@ -362,32 +375,34 @@ platform :android do
     raise "No active Android device found!" if device_id.nil? || device_id.strip.empty?
     puts "Using target device ID: #{device_id}"
 
-    # Build the APKs
-    gradle(task: "assembleDebug")
-    gradle(task: "assembleDebugAndroidTest")
+    screenshot_app_id = "#{get_application_id}.screenshot"
+
+    # Build the releaseScreenshot APKs (release build with different applicationId)
+    gradle(task: "assembleReleaseScreenshot")
+    gradle(task: "assembleReleaseScreenshotAndroidTest")
 
     # Uninstall existing packages to ensure a clean state
     puts "Uninstalling previous installations..."
-    sh("adb -s #{device_id} uninstall #{get_application_id}.debug") rescue nil
-    sh("adb -s #{device_id} uninstall #{get_application_id}.debug.test") rescue nil
+    sh("adb -s #{device_id} uninstall #{screenshot_app_id}") rescue nil
+    sh("adb -s #{device_id} uninstall #{screenshot_app_id}.test") rescue nil
 
-    # Install both debug and test APKs
-    puts "Installing debug and test APKs..."
-    debug_apk = resolve_abi_apk(device_id)
-    android_test_apk = File.expand_path("../app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk", __dir__)
-    sh("adb -s #{device_id} install -r -t -g #{debug_apk}")
+    # Install both releaseScreenshot and test APKs
+    puts "Installing releaseScreenshot and test APKs..."
+    release_screenshot_apk = resolve_release_screenshot_apk(device_id)
+    android_test_apk = File.expand_path("../app/build/outputs/apk/androidTest/releaseScreenshot/app-releaseScreenshot-androidTest.apk", __dir__)
+    sh("adb -s #{device_id} install -r -t -g #{release_screenshot_apk}")
     sh("adb -s #{device_id} install -r -t -g #{android_test_apk}")
 
     # Start the app once to get it out of stopped state
     puts "Launching the app to initialize its state..."
-    sh("adb -s #{device_id} shell am start -n #{get_application_id}.debug/com.nihaltp.aftersleep.MainActivity") rescue nil
+    sh("adb -s #{device_id} shell am start -n #{screenshot_app_id}/com.nihaltp.aftersleep.MainActivity") rescue nil
     sleep(2)
 
     # Grant notification listener access (append to existing list)
     puts "Granting notification listener access..."
     current_listeners = `adb -s #{device_id} shell settings get secure enabled_notification_listeners`.strip rescue ""
     current_listeners = "" if current_listeners == "null"
-    our_listener = "#{get_application_id}.debug/com.nihaltp.aftersleep.service.ActiveMediaNotificationListenerService"
+    our_listener = "#{screenshot_app_id}/com.nihaltp.aftersleep.service.ActiveMediaNotificationListenerService"
     unless current_listeners.split(":").include?(our_listener)
       new_listeners = current_listeners.empty? ? our_listener : "#{current_listeners}:#{our_listener}"
       sh("adb -s #{device_id} shell settings put secure enabled_notification_listeners \"#{new_listeners}\"") rescue nil
@@ -395,15 +410,15 @@ platform :android do
 
     # Grant notification permission
     puts "Granting notification permission..."
-    sh("adb -s #{device_id} shell pm grant #{get_application_id}.debug android.permission.POST_NOTIFICATIONS") rescue nil
+    sh("adb -s #{device_id} shell pm grant #{screenshot_app_id} android.permission.POST_NOTIFICATIONS") rescue nil
 
     # Whitelist app from battery optimizations
     puts "Whitelisting app from battery optimizations..."
-    sh("adb -s #{device_id} shell dumpsys deviceidle whitelist +#{get_application_id}.debug") rescue nil
+    sh("adb -s #{device_id} shell dumpsys deviceidle whitelist +#{screenshot_app_id}") rescue nil
 
     # Clean previous screenshots on the device
     puts "Clearing previous screenshots on device..."
-    sh("adb -s #{device_id} shell rm -rf /sdcard/Android/data/#{get_application_id}.debug/files/app_screengrab") rescue nil
+    sh("adb -s #{device_id} shell rm -rf /sdcard/Android/data/#{screenshot_app_id}/files/app_screengrab") rescue nil
 
     # Query original DND state (zen_mode)
     original_zen_mode = `adb -s #{device_id} shell settings get global zen_mode`.strip rescue "0"
@@ -421,7 +436,7 @@ platform :android do
     begin
       # Run the instrumented UI tests for locale en-US
       puts "Running instrumented tests..."
-      sh("adb -s #{device_id} shell am instrument --no-window-animation -w -e class #{get_application_id}.ScreenshotTest -e testLocale en-US -e appendTimestamp false #{get_application_id}.debug.test/androidx.test.runner.AndroidJUnitRunner")
+      sh("adb -s #{device_id} shell am instrument --no-window-animation -w -e class #{get_application_id}.ScreenshotTest -e testLocale en-US -e appendTimestamp false #{screenshot_app_id}.test/androidx.test.runner.AndroidJUnitRunner")
 
       # Pull screenshots directly from the app's external files directory on the device
       output_dir = "metadata/android/en-US/images/phoneScreenshots"
@@ -431,7 +446,7 @@ platform :android do
       FileUtils.rm_rf(Dir.glob(File.join(output_dir, "*")))
 
       puts "Pulling screenshots manually from external storage..."
-      sh("adb -s #{device_id} pull /sdcard/Android/data/#{get_application_id}.debug/files/app_screengrab/en-US/images/screenshots #{output_dir}")
+      sh("adb -s #{device_id} pull /sdcard/Android/data/#{screenshot_app_id}/files/app_screengrab/en-US/images/screenshots #{output_dir}")
 
       # Move files out of the nested folder if ADB nested them
       nested_dir = File.join(output_dir, "screenshots")
@@ -453,7 +468,7 @@ platform :android do
     end
 
     # Uninstall the app and test package after screenshots are captured
-    sh("adb -s #{device_id} uninstall #{get_application_id}.debug") rescue nil
-    sh("adb -s #{device_id} uninstall #{get_application_id}.debug.test") rescue nil
+    sh("adb -s #{device_id} uninstall #{screenshot_app_id}") rescue nil
+    sh("adb -s #{device_id} uninstall #{screenshot_app_id}.test") rescue nil
   end
 end
