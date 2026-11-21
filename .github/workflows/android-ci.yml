@@ -11,11 +11,45 @@ permissions:
   contents: read
 
 jobs:
-  validate:
-    name: Validate (CI Checks)
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    outputs:
+      gradle-cache-key: ${{ steps.gradle-cache.outputs.cache-key }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27b
+          build-tools-version: '35.0.0'
+          cmdline-tools-version: 'latest'
+          packages: 'platforms;android-35 platform-tools build-tools;35.0.0'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Compute Gradle cache key
+        id: gradle-cache
+        run: |
+          echo "cache-key=$(sha256sum gradle/wrapper/gradle-wrapper.properties | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+  ktlint:
+    name: ktlint Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: setup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,11 +76,104 @@ jobs:
       - name: Run ktlint check
         run: ./gradlew :app:ktlintCheck --no-daemon
 
+  detekt:
+    name: Detekt
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27b
+          build-tools-version: '35.0.0'
+          cmdline-tools-version: 'latest'
+          packages: 'platforms;android-35 platform-tools build-tools;35.0.0'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Run detekt
         run: ./gradlew :app:detekt --no-daemon
+
+  build-debug:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27b
+          build-tools-version: '35.0.0'
+          cmdline-tools-version: 'latest'
+          packages: 'platforms;android-35 platform-tools build-tools;35.0.0'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27b
+          build-tools-version: '35.0.0'
+          cmdline-tools-version: 'latest'
+          packages: 'platforms;android-35 platform-tools build-tools;35.0.0'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --no-daemon
+
+  validate:
+    name: Validate (CI Checks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [ktlint, detekt, build-debug, unit-tests]
+    steps:
+      - name: All checks passed
+        run: echo "✅ All validation checks passed"
